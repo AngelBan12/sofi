@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para una Amiga Especial</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Playfair Display', serif;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #fff;
+            min-height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+        }
+        
+        .scene {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .gift-container {
+            position: relative;
+            width: 320px;
+            height: 320px;
+            margin-bottom: 40px;
+            cursor: pointer;
+            transition: transform 0.5s ease;
+            z-index: 20;
+        }
+        
+        .gift-container:hover {
+            transform: translateY(-10px) rotate(-5deg);
+        }
+        
+        .gift-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 20px rgba(255, 235, 59, 0.8));
+            transition: all 0.5s ease;
+        }
+        
+        .gift-container:hover .gift-image {
+            filter: drop-shadow(0 0 25px rgba(255, 235, 59, 0.9)) brightness(1.2);
+            transform: scale(1.05);
+        }
+        
+        .card {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 90%;
+            max-width: 500px;
+            background: linear-gradient(to bottom, #fff5f5, #ffeaea);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            color: #5D4037;
+            z-index: 100;
+            opacity: 0;
+            transition: all 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid #ffc107;
+        }
+        
+        .card.open {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        
+        .card-content {
+            text-align: center;
+            width: 100%;
+        }
+        
+        .card-content h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.8rem;
+            color: #d32f2f;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(45deg, #ff8a00, #e52e71);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: titleGlow 3s infinite alternate;
+        }
+        
+        .message-container {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            border-left: 4px solid #ffeb3b;
+            border-right: 4px solid #ffeb3b;
+        }
+        
+        .card-content p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 12px;
+            color: #5a3e36;
+            text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-content p:nth-child(odd) {
+            color: #d32f2f;
+            font-style: italic;
+        }
+        
+        .card-image {
+            width: 200px;
+            height: 200px;
+            margin: 20px 0;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            border: 3px solid #ffeb3b;
+            transition: all 0.5s ease;
+        }
+        
+        .card-image:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .signature {
+            margin-top: 20px;
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.2rem;
+            color: #d32f2f;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(45deg, #ff8a00, #e52e71);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 30px;
+            height: 30px;
+            background: #d32f2f;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .close-btn:hover {
+            transform: scale(1.1);
+            background: #b71c1c;
+        }
+        
+        .open-btn {
+            padding: 15px 40px;
+            background: linear-gradient(45deg, #FFEB3B, #FFC107);
+            border: none;
+            border-radius: 50px;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #5D4037;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+            transition: all 0.3s ease;
+            z-index: 30;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .open-btn:before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(45deg);
+            transition: all 0.5s ease;
+        }
+        
+        .open-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.35);
+        }
+        
+        .open-btn:hover:before {
+            transform: rotate(45deg) translate(20%, 20%);
+        }
+        
+        .open-btn:active {
+            transform: translateY(2px);
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 90;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s ease;
+        }
+        
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .sparkle {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #FFEB3B;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+            animation: sparkle 1.5s ease-out;
+            z-index: 5;
+        }
+        
+        .decoration {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .floating-element {
+            position: absolute;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .heart {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            opacity: 0.7;
+            animation: fall 8s linear infinite;
+        }
+        
+        .heart:before, .heart:after {
+            content: "";
+            position: absolute;
+            width: 10px;
+            height: 16px;
+            background: #ff2a75;
+            border-radius: 50px 50px 0 0;
+            transform: rotate(-45deg);
+            transform-origin: 0 100%;
+        }
+        
+        .heart:after {
+            left: 10px;
+            transform: rotate(45deg);
+            transform-origin: 100% 100%;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-25px) rotate(5deg); }
+        }
+        
+        @keyframes fall {
+            0% { 
+                top: -20px; 
+                opacity: 0.8;
+            }
+            100% { 
+                top: 100vh; 
+                opacity: 0;
+            }
+        }
+        
+        @keyframes sparkle {
+            0% {
+                opacity: 1;
+                transform: scale(0) translate(0, 0);
+            }
+            50% {
+                opacity: 0.8;
+                transform: scale(1.5) translate(20px, -20px);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0) translate(40px, -40px);
+            }
+        }
+        
+        @keyframes titleGlow {
+            0% {
+                text-shadow: 0 0 10px rgba(255, 138, 0, 0.6);
+            }
+            100% {
+                text-shadow: 0 0 20px rgba(229, 46, 113, 0.8), 0 0 30px rgba(229, 46, 113, 0.6);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .gift-container {
+                width: 280px;
+                height: 280px;
+            }
+            
+            .card {
+                width: 95%;
+                padding: 20px;
+            }
+            
+            .card-content h1 {
+                font-size: 2.2rem;
+            }
+            
+            .card-content p {
+                font-size: 1rem;
+            }
+            
+            .card-image {
+                width: 160px;
+                height: 160px;
+            }
+            
+            .signature {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="scene">
+        <div class="gift-container" id="giftContainer">
+            <img src="https://png.pngtree.com/png-vector/20240907/ourmid/pngtree-happy-christmas-day-gift-items-and-box-with-bows-clipart-png-image_13775801.png" alt="Regalo" class="gift-image">
+        </div>
+        
+        <button class="open-btn" id="openBtn">Abrir Regalo</button>
+        
+        <div class="overlay" id="overlay"></div>
+        
+        <div class="card" id="card">
+            <button class="close-btn" id="closeBtn">×</button>
+            <div class="card-content">
+                <h1>Hola Amichi, Sofía</h1>
+                
+                <div class="message-container">
+                    <p>Te regalo estas flores amarillas.</p>
+                    <p>Espero te guste este pequeño y</p>
+                    <p>Lindo detalle que me tome el tiempo de hacerlo con cariño</p>
+                </div>
+                
+                <div class="card-image">
+                    <img src="https://victorfloristeriapuebla.com/wp-content/uploads/2025/09/white-Photoroom-Photoroom-9-e1757358305582.png" alt="Flores amarillas">
+                </div>
+                
+                <p class="signature">Con cariño, tu amigo Angel</p>
+            </div>
+        </div>
+        
+        <div class="decoration" id="decoration"></div>
+    </div>
+
+    <script>
+        // Elementos DOM
+        const giftContainer = document.getElementById('giftContainer');
+        const card = document.getElementById('card');
+        const overlay = document.getElementById('overlay');
+        const openBtn = document.getElementById('openBtn');
+        const closeBtn = document.getElementById('closeBtn');
+        const decoration = document.getElementById('decoration');
+        
+        // Abrir la carta
+        function openCard() {
+            card.classList.add('open');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevenir scroll
+        }
+        
+        // Cerrar la carta
+        function closeCard() {
+            card.classList.remove('open');
+            overlay.classList.remove('active');
+            document.body.style.overflow = ''; // Permitir scroll nuevamente
+        }
+        
+        // Event listeners
+        openBtn.addEventListener('click', openCard);
+        giftContainer.addEventListener('click', openCard);
+        closeBtn.addEventListener('click', closeCard);
+        overlay.addEventListener('click', closeCard);
+        
+        // Cerrar con la tecla Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeCard();
+        });
+        
+        // Crear efecto de brillo en el regalo
+        function createSparkles() {
+            for (let i = 0; i < 5; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.classList.add('sparkle');
+                
+                const xPos = Math.random() * 320;
+                const yPos = Math.random() * 320;
+                
+                sparkle.style.left = `${xPos}px`;
+                sparkle.style.top = `${yPos}px`;
+                
+                sparkle.style.animationDelay = `${Math.random() * 2}s`;
+                
+                giftContainer.appendChild(sparkle);
+                
+                // Eliminar después de la animación
+                setTimeout(() => {
+                    sparkle.remove();
+                }, 1500);
+            }
+        }
+        
+        // Crear elementos decorativos
+        function createDecorations() {
+            // Crear corazones
+            for (let i = 0; i < 15; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                
+                heart.style.left = `${Math.random() * 100}vw`;
+                heart.style.animationDuration = `${Math.random() * 5 + 5}s`;
+                heart.style.animationDelay = `${Math.random() * 5}s`;
+                
+                decoration.appendChild(heart);
+            }
+            
+            // Crear elementos flotantes
+            for (let i = 0; i < 10; i++) {
+                const element = document.createElement('div');
+                element.classList.add('floating-element');
+                
+                const size = Math.random() * 20 + 10;
+                const colors = ['#ffeb3b', '#ff8a65', '#f48fb1', '#ce93d8', '#80deea'];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                
+                element.style.width = `${size}px`;
+                element.style.height = `${size}px`;
+                element.style.background = color;
+                element.style.borderRadius = '50%';
+                element.style.opacity = '0.6';
+                element.style.boxShadow = `0 0 10px ${color}`;
+                
+                element.style.left = `${Math.random() * 100}vw`;
+                element.style.top = `${Math.random() * 100}vh`;
+                element.style.animationDuration = `${Math.random() * 10 + 5}s`;
+                element.style.animationDelay = `${Math.random() * 5}s`;
+                
+                decoration.appendChild(element);
+            }
+        }
+        
+        // Inicializar
+        createDecorations();
+        
+        // Crear brillos intermitentes en el regalo
+        setInterval(createSparkles, 2000);
+        
+        // Efecto de título brillante
+        setInterval(() => {
+            const title = document.querySelector('h1');
+            title.style.animation = 'none';
+            setTimeout(() => {
+                title.style.animation = 'titleGlow 3s infinite alternate';
+            }, 10);
+        }, 5000);
+    </script>
+</body>
+</html>
